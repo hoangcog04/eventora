@@ -1,31 +1,53 @@
-SELECT_TYPE_CHOICES = [(0, "No Selection"), (1, "Single"), (2, "Multiple")]
-INPUT_TYPE_CHOICES = [(0, "No Entry"), (1, "Manual"), (2, "Select From List")]
+from django.db import models
 
-CHECKOUT_METHOD = [(0, "Default"), (1, "Offline"), (2, "Payment system")]
 
-USE_TYPE = [(0, "Amount off"), (1, "Percent off")]
+class SelectType(models.IntegerChoices):
+    NO_SELECTION = 0, "No selection"
+    SINGLE = 1, "Single"
+    MULTIPLE = 2, "Multiple"
 
-EVENT_STATUS = [
-    (0, "Draft"),
-    (1, "Live"),
-    (2, "Started"),
-    (3, "Ended"),
-    (4, "Canceled"),
-]
 
-ORDER_STATUS = [
-    (0, "Default"),
-    (1, "Started"),
-    (2, "Pending"),
-    (3, "Completed"),
-    (4, "Abandoned"),
-]
-DELIVERY_METHOD = [(0, "Email"), (1, "Phone")]
+class InputType(models.IntegerChoices):
+    NO_ENTRY = 0, "No entry"
+    MANUAL = 1, "Manual"
+    SELECT_FROM_LIST = 2, "Select from list"
 
-REFUND_REQUEST_STATUS = [
-    (0, "Pending"),
-    (1, "Refunding"),
-    (2, "Processed"),
-    (3, "Rejected"),
-    (4, "Error"),
-]
+
+class CheckoutMethod(models.IntegerChoices):
+    DEFAULT = 0, "Default"
+    OFFLINE = 1, "Offline"
+    PAYMENT_SYSTEM = 2, "Payment system"
+
+
+class UseType(models.IntegerChoices):
+    AMOUNT_OFF = 0, "Amount off"
+    PERCENT_OFF = 1, "Percent off"
+
+
+class EventStatus(models.IntegerChoices):
+    DRAFT = 0, "Draft"
+    LIVE = 1, "Live"
+    STARTED = 2, "Started"
+    ENDED = 3, "Ended"
+    CANCELED = 4, "Canceled"
+
+
+class OrderStatus(models.IntegerChoices):
+    DEFAULT = 0, "Default"
+    STARTED = 1, "Started"
+    PENDING = 2, "Pending"
+    COMPLETED = 3, "Completed"
+    ABANDONED = 4, "Abandoned"
+
+
+class DeliveryMethod(models.IntegerChoices):
+    EMAIL = 0, "Email"
+    PHONE = 1, "Phone"
+
+
+class RefundRequestStatus(models.IntegerChoices):
+    PENDING = 0, "Pending"
+    REFUNDING = 1, "Refunding"
+    PROCESSED = 2, "Processed"
+    REJECTED = 3, "Rejected"
+    ERROR = 4, "Error"
