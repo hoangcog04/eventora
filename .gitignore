@@ -13,3 +13,4 @@ wheels/
 .pg_service.conf
 .pgpass
 .env
+security/fixtures/initial_users.json
