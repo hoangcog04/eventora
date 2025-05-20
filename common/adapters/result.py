@@ -1,19 +1,23 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
-from common.enums.code import Code
+from common.constants.code import Status
 
 
 @dataclass
 class Result:
     code: int
     message: str
-    data: Optional[Union[Dict, List]] = None
+    data: Optional[Any] = None
 
 
-def success(code=Code.SUCCESS, data=None) -> "Result":
-    return Result(code=code.code, message=code.message, data=data)
+def success(data=None, status=Status.SUCCESS) -> Dict[str, Any]:
+    return Result(status.code, status.msg, data).__dict__
 
 
-def failed(code=Code.FAILED) -> "Result":
-    return Result(code=code.code, message=code.message, data=None)
+def failed(data=None, status=Status.FAILED) -> Dict[str, Any]:
+    return Result(status.code, status.msg, data).__dict__
+
+
+def validate_failed(data=None, status=Status.VALIDATE_FAILED) -> Dict[str, Any]:
+    return Result(status.code, status.msg, data).__dict__

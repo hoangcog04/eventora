@@ -11,7 +11,7 @@ from common.constants.choices import (
     SelectType,
     UseType,
 )
-from common.constants.code import GET_COUNTRIES, GET_CURRENCIES
+from common.constants.countries import GET_COUNTRIES, GET_CURRENCIES
 
 
 class Venue(models.Model):

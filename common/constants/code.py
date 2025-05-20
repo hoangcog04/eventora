@@ -1,76 +1,14 @@
-countries = [
-    "AR",
-    "AT",
-    "AU",
-    "BE",
-    "BR",
-    "CA",
-    "CH",
-    "CL",
-    "CO",
-    "CY",
-    "CZ",
-    "DE",
-    "DK",
-    "EE",
-    "ES",
-    "FI",
-    "FR",
-    "GB",
-    "GR",
-    "HK",
-    "HU",
-    "IE",
-    "IL",
-    "IT",
-    "JP",
-    "LT",
-    "LU",
-    "LV",
-    "MT",
-    "MX",
-    "MY",
-    "NL",
-    "NO",
-    "NZ",
-    "PE",
-    "PH",
-    "PL",
-    "PT",
-    "SE",
-    "SG",
-    "SI",
-    "SK",
-    "TH",
-    "TW",
-    "US",
-]
-currencies = [
-    "ARS",
-    "AUD",
-    "BRL",
-    "CAD",
-    "CHF",
-    "CZK",
-    "DKK",
-    "EUR",
-    "GBP",
-    "HKD",
-    "HUF",
-    "ILS",
-    "JPY",
-    "MXN",
-    "MYR",
-    "NOK",
-    "NZD",
-    "PHP",
-    "PLN",
-    "SEK",
-    "SGD",
-    "THB",
-    "TWD",
-    "USD",
-]
+from enum import Enum
 
-GET_COUNTRIES = [(i, i) for i in countries]
-GET_CURRENCIES = [(i, i) for i in currencies]
+
+class Status(Enum):
+    SUCCESS = (200, "Operation successful")
+    VALIDATE_FAILED = (400, "Parameter verification failed")
+    UNAUTHORIZED = (401, "Not logged in or token has expired")
+    FORBIDDEN = (403, "You do not have permission to access the resource you requested")
+    NOT_FOUND = (404, "Not found")
+    FAILED = (500, "Operation failed")
+
+    def __init__(self, code, msg):
+        self.code = code
+        self.msg = msg
