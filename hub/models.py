@@ -11,17 +11,13 @@ from common.constants.choices import (
 
 class Order(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL
     )
-    event_id = models.ForeignKey(
-        "organizer.Event", null=True, on_delete=models.SET_NULL
-    )
-    coupon_id = models.ForeignKey(
-        "organizer.Coupon", null=True, on_delete=models.SET_NULL
-    )
-    order_sn = models.CharField(max_length=255, null=True)
-    owner_name = models.CharField(max_length=255, null=True)
+    event = models.ForeignKey("organizer.Event", null=True, on_delete=models.SET_NULL)
+    coupon = models.ForeignKey("organizer.Coupon", null=True, on_delete=models.SET_NULL)
+    order_sn = models.CharField(max_length=255, blank=True)
+    owner_name = models.CharField(max_length=255, blank=True)
     total_amount = models.DecimalField(max_digits=19, decimal_places=3)
     pay_amount = models.DecimalField(max_digits=19, decimal_places=3)
     coupon_amount = models.DecimalField(max_digits=19, decimal_places=3)
@@ -34,32 +30,30 @@ class Order(models.Model):
     delivery_method = models.PositiveSmallIntegerField(
         choices=DeliveryMethod.choices, default=DeliveryMethod.EMAIL
     )
-    bill_receiver_email = models.CharField(max_length=255, null=True)
-    receiver_name = models.CharField(max_length=255, null=True)
-    payment_time = models.DateTimeField()
-    delivery_time = models.DateTimeField()
+    bill_receiver_email = models.CharField(max_length=255, blank=True)
+    receiver_name = models.CharField(max_length=255, blank=True)
+    payment_time = models.DateTimeField(null=True)
+    delivery_time = models.DateTimeField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
 
 
 class OrderAttendee(models.Model):
     id = models.BigAutoField(primary_key=True)
-    order_id = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL)
-    ticket_id = models.ForeignKey(
-        "organizer.Ticket", null=True, on_delete=models.SET_NULL
-    )
-    ticket_stock_id = models.ForeignKey(
+    order = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL)
+    ticket = models.ForeignKey("organizer.Ticket", null=True, on_delete=models.SET_NULL)
+    ticket_stock = models.ForeignKey(
         "organizer.TicketStock", null=True, on_delete=models.SET_NULL
     )
-    order_sn = models.CharField(max_length=255, null=True)
-    ticket_name = models.CharField(max_length=255, null=True)
+    order_sn = models.CharField(max_length=255, blank=True)
+    ticket_name = models.CharField(max_length=255, blank=True)
     ticket_pic = models.TextField(blank=True)
     ticket_price = models.DecimalField(max_digits=19, decimal_places=3)
     ticket_quantity = models.PositiveIntegerField()
     real_amount = models.DecimalField(max_digits=19, decimal_places=3)
     coupon_amount = models.DecimalField(max_digits=19, decimal_places=3)
-    bill_receiver_email = models.CharField(max_length=255, null=True)
-    receiver_email = models.CharField(max_length=255, null=True)
+    bill_receiver_email = models.CharField(max_length=255, blank=True)
+    receiver_email = models.CharField(max_length=255, blank=True)
     refuned = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
@@ -67,16 +61,14 @@ class OrderAttendee(models.Model):
 
 class RefundRequest(models.Model):
     id = models.BigAutoField(primary_key=True)
-    order_id = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL)
-    event_id = models.ForeignKey(
-        "organizer.Event", null=True, on_delete=models.SET_NULL
-    )
-    user_id = models.ForeignKey(
+    order = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL)
+    event = models.ForeignKey("organizer.Event", null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL
     )
-    order_sn = models.CharField(max_length=255, null=True)
-    from_name = models.CharField(max_length=255, null=True)
-    from_email = models.CharField(max_length=255, null=True)
+    order_sn = models.CharField(max_length=255, blank=True)
+    from_name = models.CharField(max_length=255, blank=True)
+    from_email = models.CharField(max_length=255, blank=True)
     message = models.TextField(null=True, blank=True)
     reason = models.TextField(null=True, blank=True)
     order_pay_amount = models.DecimalField(max_digits=19, decimal_places=3)
@@ -95,20 +87,18 @@ class RefundRequest(models.Model):
 
 class RefundItem(models.Model):
     id = models.BigAutoField(primary_key=True)
-    refund_request_id = models.ForeignKey(
+    refund_request = models.ForeignKey(
         RefundRequest, null=True, on_delete=models.SET_NULL
     )
-    ticket_id = models.ForeignKey(
-        "organizer.Ticket", null=True, on_delete=models.SET_NULL
-    )
-    ticket_name = models.CharField(max_length=255, null=True)
+    ticket = models.ForeignKey("organizer.Ticket", null=True, on_delete=models.SET_NULL)
+    ticket_name = models.CharField(max_length=255, blank=True)
     order_ticket_price = models.DecimalField(max_digits=19, decimal_places=3)
     order_ticket_quantity = models.PositiveIntegerField()
     real_amount = models.DecimalField(max_digits=19, decimal_places=3)
     coupon_amount = models.DecimalField(max_digits=19, decimal_places=3)
     refund_qty = models.PositiveIntegerField()
     refund_amount = models.PositiveIntegerField()
-    qty_processed = models.PositiveIntegerField()
-    amount_rocessed = models.PositiveIntegerField()
+    qty_processed = models.PositiveIntegerField(default=0)
+    amount_rocessed = models.PositiveIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     changed = models.DateTimeField(auto_now=True)
