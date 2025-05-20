@@ -134,7 +134,7 @@ class CheckoutSetting(models.Model):
 
 class AttributeValue(models.Model):
     id = models.BigAutoField(primary_key=True)
-    eventd = models.ForeignKey(Event, null=True, on_delete=models.SET_NULL)
+    event = models.ForeignKey(Event, null=True, on_delete=models.SET_NULL)
     attribute_category = models.ForeignKey(
         AttributeCategory, null=True, on_delete=models.SET_NULL
     )
