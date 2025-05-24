@@ -1,15 +1,64 @@
 from typing import List
 
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from common.constants.business import (
+    DEFAULT_CHECKOUT_METHOD,
+    DEFAULT_QUANTITY_LOCK,
+    FIRST_TICKET_NAME,
+    FIRST_TICKET_SORTING,
+)
 from common.constants.params import (
     CHECKOUT_SETTING_EXPANSION,
     PROPERTY_EXPANSION,
     VENUE_EXPANSION,
 )
 
-from ..models import Agenda, Attribute, AttributeValue, CheckoutSetting, Event, Faq
-from ..serializers.event import EventDetail
+from ..models import (
+    Agenda,
+    Attribute,
+    AttributeValue,
+    CheckoutSetting,
+    Event,
+    Faq,
+    Ticket,
+    TicketStock,
+)
+from ..serializers.event import EventAddOut, EventDetail
+
+
+@transaction.atomic
+def auto_add_event(data) -> "EventAddOut":
+    event_data = data.pop("event")
+    ticket_data = data.pop("ticket")
+
+    # mocking
+    event_data["organizer_id"] = 1
+    if ticket_data["price"] == 0:
+        event_data["is_free"] = True
+        ticket_data["is_free"] = True
+    event = Event.objects.create(**event_data)
+
+    ticket_data["event_id"] = event.id
+    ticket_data["name"] = FIRST_TICKET_NAME
+    ticket_data["capacity"] = event.capacity
+    ticket_data["sorting"] = FIRST_TICKET_SORTING
+    ticket = Ticket.objects.create(**ticket_data)
+
+    ticket_stock = TicketStock(
+        ticket=ticket,
+        quantity_available=ticket.capacity,
+        quantity_lock=DEFAULT_QUANTITY_LOCK,
+    )
+    ticket_stock.save()
+
+    checkout_setting = CheckoutSetting(
+        event=event, checkout_method=DEFAULT_CHECKOUT_METHOD
+    )
+    checkout_setting.save()
+
+    return EventAddOut({"event": event, "ticket": ticket})
 
 
 def get_event_detail(event_id: int, expand_list: List[str]) -> "EventDetail":
