@@ -9,7 +9,17 @@ from common.constants.business import (
     FIRST_TICKET_SORTING,
 )
 
-from ..models import CheckoutSetting, Event, Ticket, TicketStock, Venue
+from ..models import (
+    Agenda,
+    Attribute,
+    AttributeValue,
+    CheckoutSetting,
+    Event,
+    Faq,
+    Ticket,
+    TicketStock,
+    Venue,
+)
 
 
 class AutoCreatePayload(serializers.Serializer):
@@ -92,15 +102,60 @@ class AutoCreatePayload(serializers.Serializer):
 
 
 class AutoCreateRes(serializers.Serializer):
-    class EventOut(serializers.ModelSerializer):
+    class Event(serializers.ModelSerializer):
         class Meta:
             model = Event
             fields = "__all__"
 
-    class TicketOut(serializers.ModelSerializer):
+    class Ticket(serializers.ModelSerializer):
         class Meta:
             model = Ticket
             fields = "__all__"
 
-    event = EventOut()
-    ticket = TicketOut()
+    event = Event()
+    ticket = Ticket()
+
+
+class EventDetail(serializers.Serializer):
+    class Event(serializers.ModelSerializer):
+        class Meta:
+            model = Event
+            exclude = ("capacity",)
+
+    class Venue(serializers.ModelSerializer):
+        class Meta:
+            model = Venue
+            exclude = ("organizer",)
+
+    class Attr(serializers.ModelSerializer):
+        class Meta:
+            model = Attribute
+            exclude = ("attribute_category",)
+
+    class AttrValue(serializers.ModelSerializer):
+        class Meta:
+            model = AttributeValue
+            exclude = ("event", "attribute_category")
+
+    class CheckOutSetting(serializers.ModelSerializer):
+        class Meta:
+            model = CheckoutSetting
+            fields = "__all__"
+
+    class Agenda(serializers.ModelSerializer):
+        class Meta:
+            model = Agenda
+            exclude = ("event",)
+
+    class Faq(serializers.ModelSerializer):
+        class Meta:
+            model = Faq
+            exclude = ("event",)
+
+    event = Event()
+    venue = Venue()
+    attributes = Attr(many=True)
+    attribute_values = AttrValue(many=True)
+    checkout_settings = CheckOutSetting(many=True)
+    agendas = Agenda(many=True)
+    faqs = Faq(many=True)
