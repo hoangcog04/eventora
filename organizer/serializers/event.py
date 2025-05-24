@@ -13,8 +13,8 @@ from ..models import (
 )
 
 
-class EventAddIn(serializers.Serializer):
-    class Event(serializers.ModelSerializer):
+class EventAddReq(serializers.Serializer):
+    class EventReq(serializers.ModelSerializer):
         venue_id = serializers.IntegerField()
 
         class Meta:
@@ -48,70 +48,74 @@ class EventAddIn(serializers.Serializer):
                 raise serializers.ValidationError("Finish must occur after start")
             return data
 
-    class Ticket(serializers.ModelSerializer):
+    class TicketReq(serializers.ModelSerializer):
         class Meta:
             model = Ticket
             fields = ["price", "max_quantity_per_order"]
 
-    event = Event()
-    ticket = Ticket()
+        def validate(self, data):
+            data["is_free"] = True if data["price"] == 0 else False
+            return data
+
+    event = EventReq()
+    ticket = TicketReq()
 
 
-class EventAddOut(serializers.Serializer):
-    class Event(serializers.ModelSerializer):
+class EventAddRes(serializers.Serializer):
+    class EventRes(serializers.ModelSerializer):
         class Meta:
             model = Event
             fields = "__all__"
 
-    class Ticket(serializers.ModelSerializer):
+    class TicketRes(serializers.ModelSerializer):
         class Meta:
             model = Ticket
             fields = "__all__"
 
-    event = Event()
-    ticket = Ticket()
+    event = EventRes()
+    ticket = TicketRes()
 
 
 class EventDetail(serializers.Serializer):
-    class Event(serializers.ModelSerializer):
+    class EventRes(serializers.ModelSerializer):
         class Meta:
             model = Event
             exclude = ("capacity",)
 
-    class Venue(serializers.ModelSerializer):
+    class VenueRes(serializers.ModelSerializer):
         class Meta:
             model = Venue
             exclude = ("organizer",)
 
-    class Attr(serializers.ModelSerializer):
+    class AttrRes(serializers.ModelSerializer):
         class Meta:
             model = Attribute
             exclude = ("attribute_category",)
 
-    class AttrValue(serializers.ModelSerializer):
+    class AttrValueRes(serializers.ModelSerializer):
         class Meta:
             model = AttributeValue
             exclude = ("event", "attribute_category")
 
-    class CheckOutSetting(serializers.ModelSerializer):
+    class CheckOutSettingRes(serializers.ModelSerializer):
         class Meta:
             model = CheckoutSetting
             fields = "__all__"
 
-    class Agenda(serializers.ModelSerializer):
+    class AgendaRes(serializers.ModelSerializer):
         class Meta:
             model = Agenda
             exclude = ("event",)
 
-    class Faq(serializers.ModelSerializer):
+    class FaqRes(serializers.ModelSerializer):
         class Meta:
             model = Faq
             exclude = ("event",)
 
-    event = Event()
-    venue = Venue()
-    attributes = Attr(many=True)
-    attribute_values = AttrValue(many=True)
-    checkout_settings = CheckOutSetting(many=True)
-    agendas = Agenda(many=True)
-    faqs = Faq(many=True)
+    event = EventRes()
+    venue = VenueRes()
+    attributes = AttrRes(many=True)
+    attribute_values = AttrValueRes(many=True)
+    checkout_settings = CheckOutSettingRes(many=True)
+    agendas = AgendaRes(many=True)
+    faqs = FaqRes(many=True)

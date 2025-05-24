@@ -2,7 +2,7 @@ from django.db import transaction
 
 from common.constants.business import DEFAULT_CHECKOUT_METHOD, DEFAULT_QUANTITY_LOCK
 from organizer.models import CheckoutSetting, Ticket, TicketStock
-from organizer.serializers.ticket import TicketAddOut
+from organizer.serializers.ticket import TicketAddRes
 
 
 def _get_currency(event_id):
@@ -16,21 +16,19 @@ def _get_currency(event_id):
 
 
 @transaction.atomic
-def add_ticket(event_id: int, data) -> "TicketAddOut":
+def add_ticket(event_id: int, data) -> "TicketAddRes":
     data["event_id"] = event_id
-
     ticket = Ticket.objects.create(**data)
 
-    ticket_stock = TicketStock(
+    TicketStock(
         ticket=ticket,
         quantity_available=ticket.capacity,
         quantity_lock=DEFAULT_QUANTITY_LOCK,
-    )
-    ticket_stock.save()
+    ).save()
 
     currency = _get_currency(event_id)
 
-    return TicketAddOut(
+    return TicketAddRes(
         {
             "ticket": ticket,
             "cost": {

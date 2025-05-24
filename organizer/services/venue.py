@@ -6,6 +6,6 @@ from organizer.serializers.venue import VenueSerializer
 
 @transaction.atomic
 def add_venue(data) -> VenueSerializer:
-    data["organizer_id"] = 2
+    data["organizer_id"] = 2  # mock fake user
     venue = Venue.objects.create(**data)
     return VenueSerializer(venue)

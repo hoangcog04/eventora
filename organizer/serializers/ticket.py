@@ -3,7 +3,7 @@ from rest_framework import serializers
 from organizer.models import Ticket
 
 
-class TicketAddIn(serializers.ModelSerializer):
+class TicketAddReq(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = [
@@ -18,26 +18,23 @@ class TicketAddIn(serializers.ModelSerializer):
             "is_hidden",
         ]
 
-    def validate(self, attrs):
-        if attrs.get("price") == 0:
-            attrs["is_free"] = True
-        else:
-            attrs["is_free"] = False
-        return attrs
+    def validate(self, data):
+        data["is_free"] = True if data["price"] == 0 else False
+        return data
 
 
-class TicketAddOut(serializers.Serializer):
-    class Ticket(serializers.ModelSerializer):
+class TicketAddRes(serializers.Serializer):
+    class TicketRes(serializers.ModelSerializer):
         class Meta:
             model = Ticket
             fields = "__all__"
 
-    class Cost(serializers.ModelSerializer):
+    class CostRes(serializers.ModelSerializer):
         currency = serializers.CharField(max_length=3)
 
         class Meta:
             model = Ticket
             fields = ["price", "currency"]
 
-    ticket = Ticket()
-    cost = Cost()
+    ticket = TicketRes()
+    cost = CostRes()

@@ -25,11 +25,11 @@ from ..models import (
     Ticket,
     TicketStock,
 )
-from ..serializers.event import EventAddOut, EventDetail
+from ..serializers.event import EventAddRes, EventDetail
 
 
 @transaction.atomic
-def auto_add_event(data) -> "EventAddOut":
+def auto_add_event(data) -> "EventAddRes":
     event_data = data.pop("event")
     ticket_data = data.pop("ticket")
 
@@ -37,7 +37,6 @@ def auto_add_event(data) -> "EventAddOut":
     event_data["organizer_id"] = 1
     if ticket_data["price"] == 0:
         event_data["is_free"] = True
-        ticket_data["is_free"] = True
     event = Event.objects.create(**event_data)
 
     ticket_data["event_id"] = event.id
@@ -46,19 +45,15 @@ def auto_add_event(data) -> "EventAddOut":
     ticket_data["sorting"] = FIRST_TICKET_SORTING
     ticket = Ticket.objects.create(**ticket_data)
 
-    ticket_stock = TicketStock(
+    TicketStock(
         ticket=ticket,
         quantity_available=ticket.capacity,
         quantity_lock=DEFAULT_QUANTITY_LOCK,
-    )
-    ticket_stock.save()
+    ).save()
 
-    checkout_setting = CheckoutSetting(
-        event=event, checkout_method=DEFAULT_CHECKOUT_METHOD
-    )
-    checkout_setting.save()
+    CheckoutSetting(event=event, checkout_method=DEFAULT_CHECKOUT_METHOD).save()
 
-    return EventAddOut({"event": event, "ticket": ticket})
+    return EventAddRes({"event": event, "ticket": ticket})
 
 
 def get_event_detail(event_id: int, expand_list: List[str]) -> "EventDetail":

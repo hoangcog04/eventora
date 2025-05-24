@@ -3,20 +3,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from common.adapters.result import success, validate_failed
-from organizer.serializers.ticket import TicketAddIn, TicketAddOut
+from organizer.serializers.ticket import TicketAddReq, TicketAddRes
 from organizer.serializers.venue import VenueSerializer
 from organizer.services.event import auto_add_event, get_event_detail
 from organizer.services.ticket import add_ticket
 from organizer.services.venue import add_venue
 from organizer.utils import parse_param
 
-from .serializers.event import EventAddIn, EventAddOut, EventDetail
+from .serializers.event import EventAddReq, EventAddRes, EventDetail
 
 
-@extend_schema(request=EventAddIn(), responses=EventAddOut())
+@extend_schema(request=EventAddReq(), responses=EventAddRes())
 @api_view(["POST"])
 def event_auto_add(request):
-    serializer = EventAddIn(data=request.data)
+    serializer = EventAddReq(data=request.data)
     if serializer.is_valid():
         res = auto_add_event(serializer.validated_data)
         return Response(success(res.data), status=201)
@@ -31,10 +31,10 @@ def event_detail(request, event_id):
     return Response(success(res.data), status=200)
 
 
-@extend_schema(request=TicketAddIn(), responses=TicketAddOut())
+@extend_schema(request=TicketAddReq(), responses=TicketAddRes())
 @api_view(["POST"])
 def ticket_add(request, event_id):
-    serializer = TicketAddIn(data=request.data)
+    serializer = TicketAddReq(data=request.data)
     if serializer.is_valid():
         res = add_ticket(event_id, serializer.validated_data)
         return Response(success(res.data), status=201)
